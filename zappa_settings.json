@@ -1,0 +1,16 @@
+{
+    "production": {
+        "app_function": "src.main.app",
+        "aws_region": "eu-west-2",
+        "profile_name": "oliviervg",
+        "project_name": "world-cup",
+        "runtime": "python3.6",
+        "s3_bucket": "oliviervg-zappa",
+        "domain": "world-cup.oliviervg.com",
+        "certificate_arn": "arn:aws:acm:us-east-1:658878626892:certificate/c9ca58d9-c6f9-43d9-909c-cae4be977430",
+        "vpc_config": {
+            "SubnetIds": [ "subnet-d1f6f09c", "subnet-08e61672" ],
+            "SecurityGroupIds": [ "sg-0d428066" ]
+        }
+    }
+}
