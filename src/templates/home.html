@@ -53,14 +53,10 @@
         <form class="form-inline" action="{{ url_for("submit") }}" method="post">
         {% endif %}
 
-            {% set index = 0 %}
             {% for fixture in fixtures %}
                 {% set game = fixture.matchday|string + '_' + fixture.homeTeamName + '_' + fixture.awayTeamName %}
                 {% set kick_off = fixture.date|convert_to_datetime %}
                 {% set editable = True if current_time < kick_off and not other_user else False %}
-                {% if editable %}
-                    {% set index = index + 1 %}
-                {% endif %}
                 {% if fixture.homeTeamName != "" and fixture.awayTeamName != "" %}
                 <div class="row">
                     <div class="col-sm-12">
@@ -69,15 +65,15 @@
                                 <p>{{ fixture.date|strftime }}</p>
                             </div>
                             {% if editable %}
-                            <input type="hidden" name="matchday_{{ index }}" value="{{ fixture.matchday }}">
+                            <input type="hidden" name="matchday_{{ loop.index }}" value="{{ fixture.matchday }}">
                             {% endif %}
                             <div class="col-sm-2">
                                 <label>{{ fixture.homeTeamName }}</label>
                             </div>
                             <div class="col-sm-1">
                                 {% if editable %}
-                                <input type="hidden" name="home_team_{{ index }}" value="{{ fixture.homeTeamName }}">
-                                <input type="number" min="0" max="100" name="home_score_{{ index }}" class="form-control form-width" id="home_score_{{ index }}" value="{{ user.predictions.get(game).home_score }}">
+                                <input type="hidden" name="home_team_{{ loop.index }}" value="{{ fixture.homeTeamName }}">
+                                <input type="number" min="0" max="100" name="home_score_{{ loop.index }}" class="form-control form-width" id="home_score_{{ loop.index }}" value="{{ user.predictions.get(game).home_score }}">
                                 {% else %}
                                 <p>{{ user.predictions.get(game).home_score }}</p>
                                 {% endif %}
@@ -87,8 +83,8 @@
                             </div>
                             <div class="col-sm-1">
                                 {% if editable %}
-                                <input type="hidden" name="away_team_{{ index }}" value="{{ fixture.awayTeamName }}">
-                                <input type="number" min="0" max="100" name="away_score_{{ index }}" class="form-control form-width" id="away_score_{{ index }}" value="{{ user.predictions.get(game).away_score }}">
+                                <input type="hidden" name="away_team_{{ loop.index }}" value="{{ fixture.awayTeamName }}">
+                                <input type="number" min="0" max="100" name="away_score_{{ loop.index }}" class="form-control form-width" id="away_score_{{ loop.index }}" value="{{ user.predictions.get(game).away_score }}">
                                 {% else %}
                                 <p>{{ user.predictions.get(game).away_score }}</p>
                                 {% endif %}

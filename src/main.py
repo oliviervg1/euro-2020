@@ -120,7 +120,6 @@ def home():
 def submit():
     user = db.get_user(session['sub'])
     predictions = convert_submit_form_to_dict(request.form)
-    print(predictions)
     try:
         football.check_predictions_validity(predictions)
         db.add_predictions(user, predictions)
