@@ -4,7 +4,6 @@ from dateutil.parser import parse as parse_date
 
 from flask import Flask, session, jsonify, url_for, redirect, request, \
     render_template, flash
-from flask_paranoid import Paranoid
 from authlib.flask.client import OAuth
 from authlib.client.apps import google
 
@@ -26,10 +25,6 @@ app.config.update(
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SQLALCHEMY_DATABASE_URI=config.get('db', 'sqlalchemy_db_url')
 )
-
-# Set up Paranoid
-paranoid = Paranoid(app)
-paranoid.redirect_view = '/'
 
 # Set up Football client
 football = FootballClient(config.get('football', 'api_key'), 467)
@@ -79,16 +74,27 @@ def login():
 def authorized():
     token = google.authorize_access_token()
     user_info = google.parse_openid(token)
-    db.add_user(user_info, token)
+    try:
+        db.add_user(
+            config.get('google_login', 'whitelisted_domains'), user_info, token
+        )
+    except Exception:
+        return jsonify(error='Forbidden'), 403
     session.permanent = True
     session['sub'] = user_info['sub']
-    return redirect(url_for('my_predictions'))
+    return redirect(url_for('home'))
+
+
+@app.route('/logout')
+def logout():
+    del session['sub']
+    return redirect(url_for('index'))
 
 
 @app.route('/')
 def index():
     if session.get('sub'):
-        return redirect(url_for('my_predictions'))
+        return redirect(url_for('home'))
     return render_template(
         'index.html',
         google_login_url=url_for('login'),
@@ -96,11 +102,11 @@ def index():
     )
 
 
-@app.route('/my-predictions')
+@app.route('/home')
 @require_login
-def my_predictions():
+def home():
     return render_template(
-        'my-predictions.html',
+        'home.html',
         user=db.get_user(session['sub']).to_json(),
         picture=google.profile()['picture'],
         fixtures=football.get_all_fixtures(),
@@ -109,18 +115,19 @@ def my_predictions():
     )
 
 
-@app.route('/my-predictions/submit', methods=['POST'])
+@app.route('/home/submit', methods=['POST'])
 @require_login
 def submit():
     user = db.get_user(session['sub'])
     predictions = convert_submit_form_to_dict(request.form)
+    print(predictions)
     try:
         football.check_predictions_validity(predictions)
         db.add_predictions(user, predictions)
         flash('Your predictions were successfully saved!', 'info')
     except Exception as e:
         flash(str(e), 'danger')
-    return redirect(url_for('my_predictions'))
+    return redirect(url_for('home'))
 
 
 @app.route('/user/<int:user_id>')
@@ -128,7 +135,7 @@ def submit():
 def user(user_id):
     other_user = db.get_user_by_id(user_id)
     return render_template(
-        'my-predictions.html',
+        'home.html',
         user=db.get_user(session['sub']).to_json(),
         picture=google.profile()['picture'],
         fixtures=football.get_all_fixtures(),
@@ -153,7 +160,7 @@ def sweepstakes():
 @require_login
 def predictions():
     return render_template(
-        "predictions.html",
+        'predictions.html',
         user=db.get_user(session['sub']).to_json(),
         picture=google.profile()['picture'],
         leaderboard=db.get_predictions_leaderboard()

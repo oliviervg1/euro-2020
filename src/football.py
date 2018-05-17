@@ -4,7 +4,7 @@ import requests
 class FootballClient(object):
 
     def __init__(self, api_key, soccer_season_id):
-        self.base_endpoint = 'http://api.football-data.org/v1'
+        self.base_endpoint = 'https://api.football-data.org/v1'
         self.soccer_season_id = soccer_season_id
         self.requests = requests.Session()
         self.requests.headers.update({'X-Auth-Token': api_key})

@@ -61,6 +61,7 @@
                 {% if editable %}
                     {% set index = index + 1 %}
                 {% endif %}
+                {% if fixture.homeTeamName != "" and fixture.awayTeamName != "" %}
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group form-group-width">
@@ -71,11 +72,7 @@
                             <input type="hidden" name="matchday_{{ index }}" value="{{ fixture.matchday }}">
                             {% endif %}
                             <div class="col-sm-2">
-                                {% if fixture.homeTeamName != "" %}
                                 <label>{{ fixture.homeTeamName }}</label>
-                                {% else %}
-                                <label>TBD</label>
-                                {% endif %}
                             </div>
                             <div class="col-sm-1">
                                 {% if editable %}
@@ -97,11 +94,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-sm-2">
-                                {% if fixture.awayTeamName != "" %}
                                 <label>{{ fixture.awayTeamName }}</label>
-                                {% else %}
-                                <label>TBD</label>
-                                {% endif %}
                             </div>
                             <div class="col-sm-3 well well-sm">
                                 <p>Actual score: {{ points.get(game).result }}</p>
@@ -111,6 +104,7 @@
                     </div>
                 </div>
                 <hr>
+                {% endif %}
             {% endfor %}
             <!-- /.row -->
 

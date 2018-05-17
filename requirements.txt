@@ -1,6 +1,4 @@
-PyJWT
 flask
-flask_paranoid
 flask-sqlalchemy
 authlib
 pymysql

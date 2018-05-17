@@ -12,8 +12,9 @@ body {
     height: 70px;
 }
 
-.navbar-txt-colour {
+.navbar-txt-colour, .navbar-txt-colour:hover {
     color: white !important;
+    text-decoration: none;
 }
 
 .navbar-button {
