@@ -1,5 +1,6 @@
 import random
 
+from datetime import datetime
 from collections import OrderedDict
 from sqlalchemy import desc
 
@@ -51,17 +52,34 @@ class DB(object):
                 token_type=token['token_type'],
                 access_token=token['access_token'],
                 refresh_token=token.get('refresh_token'),
-                expires_at=user_info['exp']
+                expires_at=(
+                    int(datetime.utcnow().timestamp()) + token['expires_in']
+                )
             )
         else:
             user.token_type = token['token_type']
             user.access_token = token['access_token']
-            user.expires_at = user_info['exp']
+            user.expires_at = (
+                int(datetime.utcnow().timestamp()) + token['expires_in']
+            )
             if token.get('refresh_token'):
                 user.refresh_token = token['refresh_token']
         db.session.add(user)
         db.session.commit()
         return user
+
+    def refresh_user_token(self, sub, token):
+        user = User.query.filter_by(sub=sub).one()
+        user.token_type = token['token_type']
+        user.access_token = token['access_token']
+        user.expires_at = (
+            int(datetime.utcnow().timestamp()) + token['expires_in']
+        )
+        if token.get('refresh_token'):
+            user.refresh_token = token['refresh_token']
+        db.session.add(user)
+        db.session.commit()
+        return user.to_token()
 
     def allocate_team(self):
         teams = Team.query.all()

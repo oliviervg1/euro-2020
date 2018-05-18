@@ -19,7 +19,7 @@ app.config.update(
     SECRET_KEY=config.get('flask', 'secret_key'),
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=True,
-    PERMANENT_SESSION_LIFETIME=timedelta(minutes=50),
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=20),
     GOOGLE_CLIENT_ID=config.get('google_login', 'client_id'),
     GOOGLE_CLIENT_SECRET=config.get('google_login', 'client_secret'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
@@ -34,7 +34,11 @@ db = DB(app, football.get_all_teams())
 
 # Set up Oauth
 oauth = OAuth(
-    app, fetch_token=(lambda name: db.get_user_token(session['sub']))
+    app,
+    fetch_token=(lambda name: db.get_user_token(session['sub'])),
+    update_token=(
+        lambda name, token: db.refresh_user_token(session['sub'], token)
+    )
 )
 google.register_to(oauth)
 
