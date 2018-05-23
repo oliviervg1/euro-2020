@@ -40,7 +40,10 @@ class DB(object):
         return User.query.count()
 
     def add_user(self, valid_domains, user_info, token):
-        if user_info.get('hd') not in valid_domains.split(','):
+        if (
+            valid_domains != '*' and
+            user_info.get('hd') not in valid_domains.split(',')
+        ):
             raise Exception('Invalid email domain')
         user = User.query.filter_by(sub=user_info['sub']).first()
         if user is None:
