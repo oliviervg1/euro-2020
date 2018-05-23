@@ -82,7 +82,8 @@ def authorized():
         db.add_user(
             config.get('google_login', 'whitelisted_domains'), user_info, token
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         return jsonify(error='Forbidden'), 403
     session.permanent = True
     session['sub'] = user_info['sub']

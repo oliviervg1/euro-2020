@@ -14,3 +14,18 @@ lint: env
 .PHONY: run
 run: lint
 	. env/bin/activate && python src/main.py
+
+.PHONY: deploy-work-staging
+deploy-work-staging: lint
+	cp src/config/config-work.cfg src/config/config.cfg
+	. env/bin/activate && zappa update staging_work
+
+.PHONY: deploy-work-production
+deploy-work-production: lint
+	cp src/config/config-work.cfg src/config/config.cfg
+	. env/bin/activate && zappa update production_work
+
+.PHONY: deploy-personal
+deploy-personal: lint
+	cp src/config/config-personal.cfg src/config/config.cfg
+	. env/bin/activate && zappa update production_personal
