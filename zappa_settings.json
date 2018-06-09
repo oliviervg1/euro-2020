@@ -13,6 +13,18 @@
             "SecurityGroupIds": [ "sg-0d428066" ]
         }
     },
+    "staging_work_scoring": {
+        "extends": "staging_work",
+        "app_function": "src.scoring.lambda_handler",
+        "keep_warm": false,
+        "events": [
+            {
+                "function": "src.scoring.lambda_handler",
+                "expression": "rate(30 minutes)"
+            }
+        ],
+        "apigateway_enabled": false
+    },
     "production_work": {
         "app_function": "src.main.app",
         "aws_region": "eu-west-2",
@@ -27,6 +39,18 @@
             "SecurityGroupIds": [ "sg-0d428066" ]
         }
     },
+    "production_work_scoring": {
+        "extends": "production_work",
+        "app_function": "src.scoring.lambda_handler",
+        "keep_warm": false,
+        "events": [
+            {
+                "function": "src.scoring.lambda_handler",
+                "expression": "rate(30 minutes)"
+            }
+        ],
+        "apigateway_enabled": false
+    },
     "production_personal": {
         "app_function": "src.main.app",
         "aws_region": "eu-west-2",
@@ -40,5 +64,17 @@
             "SubnetIds": [ "subnet-d1f6f09c", "subnet-08e61672" ],
             "SecurityGroupIds": [ "sg-0d428066" ]
         }
+    },
+    "production_personal_scoring": {
+        "extends": "production_personal",
+        "app_function": "src.scoring.lambda_handler",
+        "keep_warm": false,
+        "events": [
+            {
+                "function": "src.scoring.lambda_handler",
+                "expression": "rate(30 minutes)"
+            }
+        ],
+        "apigateway_enabled": false
     }
 }

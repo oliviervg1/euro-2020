@@ -19,13 +19,16 @@ run: lint
 deploy-work-staging: lint
 	cp src/config/config-work.cfg src/config/config.cfg
 	. env/bin/activate && zappa update staging_work
+	. env/bin/activate && zappa update staging_work_scoring
 
 .PHONY: deploy-work-production
 deploy-work-production: lint
 	cp src/config/config-work.cfg src/config/config.cfg
 	. env/bin/activate && zappa update production_work
+	. env/bin/activate && zappa update production_work_scoring
 
 .PHONY: deploy-personal
 deploy-personal: lint
 	cp src/config/config-personal.cfg src/config/config.cfg
 	. env/bin/activate && zappa update production_personal
+	. env/bin/activate && zappa update production_personal_scoring
