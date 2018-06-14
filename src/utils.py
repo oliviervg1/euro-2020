@@ -9,8 +9,7 @@ def get_current_time():
 
 def convert_submit_form_to_dict(form_predictions):
     predictions = []
-    i = 1
-    while True:
+    for i in range(1, 100):  # hacky solution
         try:
             predictions.append({
                 'matchday': int(form_predictions['matchday_{0}'.format(i)]),
@@ -19,7 +18,6 @@ def convert_submit_form_to_dict(form_predictions):
                 'away_team': form_predictions['away_team_{0}'.format(i)],
                 'away_score': form_predictions['away_score_{0}'.format(i)]
             })
-            i += 1
         except KeyError:
-            break
+            pass
     return predictions
