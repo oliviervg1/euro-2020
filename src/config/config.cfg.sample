@@ -3,11 +3,7 @@ secret_key =
 
 [football]
 api_key =
-
-[google_login]
-whitelisted_domains =
-client_id =
-client_secret =
+competition =
 
 [db]
 sqlalchemy_db_url =

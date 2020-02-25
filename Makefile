@@ -1,3 +1,7 @@
+.PHONY: infra
+infra:
+	cd infra/ && ./infra.sh
+
 .PHONY: clean
 clean:
 	- rm -rf env
@@ -9,26 +13,41 @@ env: requirements.txt requirements-dev.txt
 
 .PHONY: lint
 lint: env
-	. env/bin/activate && flake8 *.py
+	. env/bin/activate && flake8 src/
 
-.PHONY: run
-run: lint
-	. env/bin/activate && python src/main.py
+.PHONY: build
+build: lint
+ifndef TAG
+	$(error TAG environment variable hasn't been defined!)
+endif
+ifndef GCP_PROJECT
+	$(error GCP_PROJECT environment variable hasn't been defined!)
+endif
+	docker build \
+		-t gcr.io/${GCP_PROJECT}/euro-2020:${TAG} \
+		-t gcr.io/${GCP_PROJECT}/euro-2020:latest \
+		.
 
-.PHONY: deploy-work-staging
-deploy-work-staging: lint
-	cp src/config/config-work.cfg src/config/config.cfg
-	. env/bin/activate && zappa update staging_work
-	. env/bin/activate && zappa update staging_work_scoring
+.PHONY: push
+push: build
+	gcloud config set project ${GCP_PROJECT}
+	gcloud auth configure-docker
+	docker push gcr.io/${GCP_PROJECT}/euro-2020:${TAG}
+	docker push gcr.io/${GCP_PROJECT}/euro-2020:latest
 
-.PHONY: deploy-work-production
-deploy-work-production: lint
-	cp src/config/config-work.cfg src/config/config.cfg
-	. env/bin/activate && zappa update production_work
-	. env/bin/activate && zappa update production_work_scoring
+.PHONY: run_locally
+run_locally:
+ifndef TAG
+	$(error TAG environment variable hasn't been defined!)
+endif
+ifndef GCP_PROJECT
+	$(error GCP_PROJECT environment variable hasn't been defined!)
+endif
+	docker run \
+		-p 8000:8000 \
+		-e PORT=8000 \
+		gcr.io/${GCP_PROJECT}/euro-2020:${TAG} \
 
-.PHONY: deploy-personal
-deploy-personal: lint
-	cp src/config/config-personal.cfg src/config/config.cfg
-	. env/bin/activate && zappa update production_personal
-	. env/bin/activate && zappa update production_personal_scoring
+.PHONY: deploy
+deploy:
+	echo 'Not implemented yet!'

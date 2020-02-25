@@ -4,9 +4,9 @@ from pprint import pprint
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .config_parser import read_config
-from .football import FootballClient
-from .models import User, Result
+from config import read_config
+from football import FootballClient
+from models import User, Result
 
 
 def setup_logger():

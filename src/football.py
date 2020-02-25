@@ -3,19 +3,19 @@ import requests
 
 class FootballClient(object):
 
-    def __init__(self, api_key, soccer_season_id):
-        self.base_endpoint = 'https://api.football-data.org/v1'
-        self.soccer_season_id = soccer_season_id
+    def __init__(self, api_key, competition):
+        self.base_endpoint = 'https://api.football-data.org/v2/competitions'
+        self.competition = competition
         self.requests = requests.Session()
         self.requests.headers.update({'X-Auth-Token': api_key})
         self._all_teams = None
-        self._all_fixtures = None
+        self._all_matches = None
 
     def get_all_teams(self):
         if self._all_teams is None:
             response = self.requests.get(
-                '{0}/soccerseasons/{1}/teams'.format(
-                    self.base_endpoint, self.soccer_season_id
+                '{0}/{1}/teams'.format(
+                    self.base_endpoint, self.competition
                 )
             )
             response.raise_for_status()
@@ -25,26 +25,26 @@ class FootballClient(object):
             ]
         return self._all_teams
 
-    def get_all_fixtures(self):
-        if self._all_fixtures is None:
+    def get_all_matches(self):
+        if self._all_matches is None:
             response = self.requests.get(
-                '{0}/soccerseasons/{1}/fixtures'.format(
-                    self.base_endpoint, self.soccer_season_id
+                '{0}/{1}/matches'.format(
+                    self.base_endpoint, self.competition
                 )
             )
             response.raise_for_status()
-            self._all_fixtures = response.json()['fixtures']
-        return self._all_fixtures
+            self._all_matches = response.json()['matches']
+        return self._all_matches
 
     def get_results(self):
         response = self.requests.get(
-            '{0}/soccerseasons/{1}/fixtures'.format(
-                self.base_endpoint, self.soccer_season_id
+            '{0}/{1}/matches'.format(
+                self.base_endpoint, self.competition
             )
         )
         response.raise_for_status()
         results = {}
-        for fixture in response.json()['fixtures']:
+        for fixture in response.json()['matches']:
             if (
                 fixture['result']['goalsHomeTeam'] is not None and
                 fixture['result']['goalsAwayTeam'] is not None
@@ -68,11 +68,11 @@ class FootballClient(object):
         return results
 
     def check_predictions_validity(self, predictions):
-        fixtures = self.get_all_fixtures()
+        matches = self.get_all_matches()
 
         def find_fixture(matchday, home_team, away_team):
             games = [
-                fixture for fixture in fixtures
+                fixture for fixture in matches
                 if fixture['matchday'] == matchday and
                 fixture['homeTeamName'] == home_team and
                 fixture['awayTeamName'] == away_team

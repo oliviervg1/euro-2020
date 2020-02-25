@@ -4,7 +4,7 @@ from datetime import datetime
 from collections import OrderedDict
 from sqlalchemy import desc
 
-from .models import db, User, Team, Result, Prediction
+from models import db, User, Team, Result, Prediction
 
 
 class DB(object):
