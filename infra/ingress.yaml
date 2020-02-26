@@ -1,24 +1,12 @@
-# ---
-# apiVersion: networking.gke.io/v1beta1
-# kind: ManagedCertificate
-# metadata:
-#   name: euro-2020-certificate
-#   namespace: gke-system
-# spec:
-#   domains:
-#     - euro-2020.oliviervg.com
-
-# ---
-# apiVersion: cloud.google.com/v1beta1
-# kind: BackendConfig
-# metadata:
-#   name: euro-2020-iap
-#   namespace: gke-system
-# spec:
-#   iap:
-#     enabled: true
-#     oauthclientCredentials:
-#       secretName: euro-2020-oauth2
+---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: euro-2020-certificate
+  namespace: gke-system
+spec:
+  domains:
+    - euro-2020.oliviervg.com
 
 ---
 apiVersion: extensions/v1beta1
@@ -28,9 +16,8 @@ metadata:
   namespace: gke-system
   annotations:
     kubernetes.io/ingress.global-static-ip-name: euro-2020
-    # kubernetes.io/ingress.allow-http: "false"
-    # networking.gke.io/managed-certificates: euro-2020-certificate
-    # beta.cloud.google.com/backend-config: '{"gke-system": "euro-2020-iap"}'
+    kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/managed-certificates: euro-2020-certificate
 spec:
   backend:
     serviceName: istio-ingress

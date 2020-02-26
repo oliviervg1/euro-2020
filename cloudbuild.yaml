@@ -1,0 +1,23 @@
+ steps:
+ # build the container image
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['build', '-t', 'gcr.io/$PROJECT_ID/euro-2020:$COMMIT_SHA', '.']
+ # push the container image to Container Registry
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['push', 'gcr.io/$PROJECT_ID/euro-2020:$COMMIT_SHA']
+ # Deploy container image to Cloud Run
+ - name: 'gcr.io/cloud-builders/gcloud'
+   args:
+   - 'run'
+   - 'deploy'
+   - 'euro-2020'
+   - '--image'
+   - 'gcr.io/$PROJECT_ID/euro-2020:$COMMIT_SHA'
+   - '--cluster'
+   - 'euro-2020'
+   - '--cluster-location'
+   - 'europe-west2'
+   - '--platform'
+   - 'gke'
+ images:
+ - 'gcr.io/$PROJECT_ID/euro-2020:$COMMIT_SHA'
