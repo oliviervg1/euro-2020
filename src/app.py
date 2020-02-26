@@ -1,19 +1,20 @@
+# import os
 # from dateutil.parser import parse as parse_date
 
 from flask import Flask
 # session, jsonify, url_for, redirect, request, \
 #     render_template, flash
 
-from config import read_config
+# from config import read_config
 # from db import DB
 # from football import FootballClient
 # from utils import get_current_time, convert_submit_form_to_dict
 
-config = read_config('./config/config.cfg')
+# config = read_config('./config/config.cfg')
 
 app = Flask(__name__)
 app.config.update(
-    SECRET_KEY=config.get('flask', 'secret_key'),
+    # SECRET_KEY=os.environ['FLASK_SECRET_KEY'],
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=True,
 )
